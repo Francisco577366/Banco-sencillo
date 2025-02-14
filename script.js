@@ -87,3 +87,33 @@ const displayMovements = function (movements) {
 };
 
 displayMovements(account1.movements);
+
+const createUsername = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+
+createUsername(accounts);
+
+// Probando metodos
+console.log(accounts);
+
+const movements = [200, -200, 340, -300, -20, 50, 400, -460];
+
+const withdrawals = movements.filter(mov => mov < 0);
+
+console.log(withdrawals);
+
+const euroTotal = 1.1;
+
+const movementsUSD = movements.map(function (mov) {
+  return mov * euroTotal;
+});
+
+console.log(movements);
+console.log(movementsUSD);
