@@ -88,6 +88,13 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+
+calcDisplayBalance(account1.movements);
+
 const createUsername = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner
@@ -103,7 +110,7 @@ createUsername(accounts);
 // Probando metodos
 console.log(accounts);
 
-const movements = [200, -200, 340, -300, -20, 50, 400, -460];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 const withdrawals = movements.filter(mov => mov < 0);
 
@@ -117,3 +124,16 @@ const movementsUSD = movements.map(function (mov) {
 
 console.log(movements);
 console.log(movementsUSD);
+
+const balance = movements.reduce((acc, cur) => acc + cur, 0);
+console.log(balance);
+
+const max = movements.reduce((acc, mov) => {
+  if (acc > mov) {
+    return acc;
+  } else {
+    return mov;
+  }
+}, movements[0]);
+
+console.log(max);
