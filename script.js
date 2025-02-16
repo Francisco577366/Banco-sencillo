@@ -80,7 +80,7 @@ const displayMovements = function (movements) {
           <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-          <div class="movements__value">${mov}</div>
+          <div class="movements__value">${mov}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
@@ -95,6 +95,29 @@ const calcDisplayBalance = function (movements) {
 
 calcDisplayBalance(account1.movements);
 
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes}€`;
+
+  const outCalc = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(outCalc)}€`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter((int, i, arr) => {
+      console.log(arr);
+      return int >= 1;
+    })
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+
+calcDisplaySummary(account1.movements);
 const createUsername = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner
@@ -107,6 +130,7 @@ const createUsername = function (accs) {
 
 createUsername(accounts);
 
+// Pruebas de el curso
 // Probando metodos
 console.log(accounts);
 
@@ -137,3 +161,34 @@ const max = movements.reduce((acc, mov) => {
 }, movements[0]);
 
 console.log(max);
+
+const ages = [5, 2, 4, 1, 15, 8, 3];
+
+const calcAverageHumanage = ages => {
+  const humanAges = ages
+    .map(age => (age <= 2 ? 2 * age : 16 + age * 4))
+    .filter(mayor => mayor >= 18)
+    .reduce((acc, age, i, arr) => acc + age / arr.length, 0);
+  return humanAges;
+};
+
+const avg1 = calcAverageHumanage(ages);
+console.log(avg1);
+
+// TODO: function recieves age. Age to be multiplied by (2 >= * 2, 2 < + (n + 16) * 4) then exclude from array any < 18
+
+const calc = ages => {
+  let a = ages.map(el => (el <= 2 ? el * 2 : el * 4 + 16));
+  return a.filter(el => el >= 18);
+};
+
+console.log(calc([5, 2, 4, 1, 15, 8, 3]));
+
+const totalDepositsUSD = movements
+  .filter(mov => mov > 0)
+  .map(mov => mov * euroTotal)
+  .reduce((acc, mov) => acc + mov, 0);
+
+const firstWithDrawal = movements.find(mov => mov < 0);
+console.log(movements);
+console.log(firstWithDrawal);
