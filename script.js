@@ -88,9 +88,9 @@ const displayMovements = function (movements) {
 };
 
 // Function que sumas todos los datos de transferencia
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} EUR`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance} EUR`;
 };
 
 // Function de suma para los datos de intereses, entrada,
@@ -129,6 +129,12 @@ const createUsername = function (accs) {
 
 createUsername(accounts);
 
+const updateUI = function (acc) {
+  displayMovements(acc.movements);
+  calcDisplayBalance(acc);
+  calcDisplaySummary(acc);
+};
+
 let currentAccount;
 
 btnLogin.addEventListener('click', function (e) {
@@ -139,6 +145,7 @@ btnLogin.addEventListener('click', function (e) {
   );
   console.log(currentAccount);
 
+  // Comprobamos si la contrasena en el input es igual a la de el objeto.
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     console.log('login');
 
@@ -152,11 +159,52 @@ btnLogin.addEventListener('click', function (e) {
 
     inputLoginPin.blur();
 
-    displayMovements(currentAccount.movements);
-    calcDisplayBalance(currentAccount.movements);
-    calcDisplaySummary(currentAccount);
+    // Actualizacion de los datos
+    updateUI(currentAccount);
   }
 });
+
+// Esta function transfiere los datos a otra cuenta.
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+  //Este if else comprueba los datos por posibles datos repetidos o datos que no coincidan
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    // agregando datos a movements
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+
+    updateUI(currentAccount);
+  }
+});
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    console.log('i Love u');
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
+console.log(currentAccount);
 // Pruebas de el curso
 // Probando metodos
 console.log(accounts);
