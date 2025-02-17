@@ -188,6 +188,20 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+
+    //Update UI
+    updateUI(currentAccount);
+    inputLoanAmount.value = '';
+  }
+});
+
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
   if (
@@ -197,7 +211,6 @@ btnClose.addEventListener('click', function (e) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
     );
-    console.log('i Love u');
     accounts.splice(index, 1);
     containerApp.style.opacity = 0;
   }
@@ -267,3 +280,51 @@ const totalDepositsUSD = movements
 const firstWithDrawal = movements.find(mov => mov < 0);
 console.log(movements);
 console.log(firstWithDrawal);
+
+const latestLargeMovementIndex = movements.findLastIndex(
+  mov => Math.abs(mov) > 1000
+);
+
+console.log(latestLargeMovementIndex);
+console.log(
+  `Your latest large movement was ${latestLargeMovementIndex} movements ago`
+);
+
+console.log(movements.includes(-130));
+
+const anyDeposits = movements.some(mov => mov > 1500);
+console.log(anyDeposits);
+
+console.log(movements.every(mov => mov > 0));
+console.log(account4.movements.every(mov => mov > 0));
+
+const accountMovements = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(accountMovements);
+
+const accountMovements2 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(accountMovements2);
+
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+const ownersEatTooMuch = [];
+const ownersEatTooLittle = [];
+
+const recommendedFood = dogs.map(food => Math.trunc(food.weight ** 0.75 * 28));
+
+if (recommendedFood[2] < dogs[2].curFood) {
+  console.log('Tu perro no esta comiendo lo suficiente');
+}
+
+//Crea una matriz que contenga a todos los dueños de perros que comen demasiado
+//('ownersEatTooMuch') y una matriz con todos los dueños de perros que comen muy poco
+//('ownersEatTooLittle').
