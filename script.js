@@ -309,22 +309,78 @@ const accountMovements2 = accounts
   .reduce((acc, mov) => acc + mov, 0);
 console.log(accountMovements2);
 
-const dogs = [
-  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
-  { weight: 8, curFood: 200, owners: ['Matilda'] },
-  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
-  { weight: 32, curFood: 340, owners: ['Michael'] },
+const breeds = [
+  {
+    breed: 'German Shepherd',
+    averageWeight: 32,
+    activities: ['fetch', 'swimming'],
+  },
+  {
+    breed: 'Dalmatian',
+    averageWeight: 24,
+    activities: ['running', 'fetch', 'agility'],
+  },
+  {
+    breed: 'Labrador',
+    averageWeight: 28,
+    activities: ['swimming', 'fetch'],
+  },
+  {
+    breed: 'Beagle',
+    averageWeight: 12,
+    activities: ['digging', 'fetch'],
+  },
+  {
+    breed: 'Husky',
+    averageWeight: 26,
+    activities: ['running', 'agility', 'swimming'],
+  },
+  {
+    breed: 'Bulldog',
+    averageWeight: 36,
+    activities: ['sleeping'],
+  },
+  {
+    breed: 'poodle',
+    averageWeight: 18,
+    activities: ['agility', 'fetch'],
+  },
 ];
 
-const ownersEatTooMuch = [];
-const ownersEatTooLittle = [];
+// 1
+const huskyWeight = breeds.find(breed => breed.breed === 'Husky').averageWeight;
+console.log(huskyWeight);
 
-const recommendedFood = dogs.map(food => Math.trunc(food.weight ** 0.75 * 28));
+// 2.
+const dogBothActivities = breeds.find(
+  breed =>
+    breed.activities.includes('fetch') && breed.activities.includes('running')
+);
+console.log(dogBothActivities);
 
-if (recommendedFood[2] < dogs[2].curFood) {
-  console.log('Tu perro no esta comiendo lo suficiente');
-}
+//3
+const allActivities = breeds.flatMap(breed => breed.activities);
+console.log(allActivities);
 
-//Crea una matriz que contenga a todos los dueños de perros que comen demasiado
-//('ownersEatTooMuch') y una matriz con todos los dueños de perros que comen muy poco
-//('ownersEatTooLittle').
+//4
+const uniqueActives = [...new Set(allActivities)];
+console.log(uniqueActives);
+
+//5
+const swimmingAdjacent = breeds
+  .filter(breed => breed.activities.includes('swimming'))
+  .flatMap(breed => breed.activities);
+
+//6
+console.log(breeds.every(breed => breed.averageWeight > 10));
+
+// 7
+console.log(breeds.some(breed => breed.activities.length >= 3));
+
+// 8 Bonus
+const max2 = breeds
+  .filter(breed => breed.activities.includes('fetch'))
+  .map(breed => breed.averageWeight);
+const max3 = Math.max(...max2);
+console.log(max2);
+console.log(max3);
