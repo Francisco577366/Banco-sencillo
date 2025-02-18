@@ -10,6 +10,7 @@ const account1 = {
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+  type: 'premium',
 };
 
 const account2 = {
@@ -17,6 +18,7 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+  type: 'standard',
 };
 
 const account3 = {
@@ -24,6 +26,7 @@ const account3 = {
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+  type: 'bad',
 };
 
 const account4 = {
@@ -31,6 +34,7 @@ const account4 = {
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
+  type: 'bad',
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -72,9 +76,10 @@ const currencies = new Map([
 ]);
 
 // Function que borra e inserta los datos en el html
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `<div class="movements__row">
@@ -218,7 +223,15 @@ btnClose.addEventListener('click', function (e) {
 });
 
 console.log(currentAccount);
-// Pruebas de el curso
+
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
+
+// Pruebas de el curso !!!!
 // Probando metodos
 console.log(accounts);
 
@@ -384,3 +397,72 @@ const max2 = breeds
 const max3 = Math.max(...max2);
 console.log(max2);
 console.log(max3);
+
+const owners = ['jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort());
+console.log(owners);
+
+console.log(movements);
+
+// Ascending
+movements.sort((a, b) => a - b);
+console.log(movements);
+// Descending
+
+movements.sort((a, b) => b - a);
+console.log(movements);
+
+const gropedMovements = Object.groupBy(movements, movement =>
+  movement > 0 ? 'Deposits' : 'Withdrawals'
+);
+console.log(gropedMovements);
+
+const groupedByActivity = Object.groupBy(accounts, account => {
+  const movementAccount = account.movements.length;
+
+  if (movementAccount >= 8) return 'Very Active';
+  if (movementAccount >= 4) return 'Active';
+  if (movementAccount >= 1) return 'Moderate';
+  return 'inactive';
+});
+
+console.log(groupedByActivity);
+
+const arr = [1, 2, 3, 4, 5, 6, 7, 8];
+
+const groupedAccounts = Object.groupBy(accounts, ({ type }) => type);
+console.log(groupedAccounts);
+
+const x = new Array(8);
+console.log(x.fill(1));
+
+arr.fill(23, 4, 7);
+console.log(arr);
+
+const y = Array.from({ length: 7 }, () => 1);
+console.log(y);
+
+const z = Array.from({ length: 100 }, (_, i) => Math.random());
+console.log(z);
+
+labelBalance.addEventListener('click', function () {
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'),
+    el => Number(el.textContent.replace('€', ''))
+  );
+  console.log(movementsUI);
+});
+
+// Me devuelve los datos alrevez pero reverse muta el elemento origen
+console.log(movements);
+const reversedMov = movements.slice().reverse();
+console.log(movements);
+console.log(reversedMov);
+
+//Devuelve los datos al revez y no muta el elemento origen
+const reversedMov2 = movements.toReversed();
+console.log(reversedMov2);
+
+const newMovements = movements.with(1, 2000);
+console.log(newMovements);
+console.log(movements);
