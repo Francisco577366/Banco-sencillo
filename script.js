@@ -508,3 +508,55 @@ const converTittleCase = function (title) {
 };
 console.log(converTittleCase('This is a nice title'));
 console.log(converTittleCase('and here is another'));
+
+const dogs = [
+  { weight: 22, curFood: 284, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+//1
+dogs.flatMap(calc => (calc.recFood = Math.floor(calc.weight ** 0.75 * 28)));
+console.log(dogs);
+
+// 2
+
+const dogSarah = dogs.find(dog => dog.owners.includes('sarah'));
+console.log(
+  `Sarah tu perro come ${dogSarah > dogs.recFood ? 'mucho' : 'Poco'}`
+);
+
+//3
+const ownersEatTooMuch = dogs
+  .filter(current => current.curFood > current.recFood)
+  .flatMap(all => all.owners);
+
+const ownersEatTooLite = dogs
+  .filter(current => current.curFood < current.recFood)
+  .flatMap(all => all.owners);
+
+//4
+console.log(
+  `${ownersEatTooMuch.join(
+    ' '
+  )} Estos perros estan comiendo mucho ${ownersEatTooLite.join(
+    ' '
+  )} estos perros estan comiendo muy poco`
+);
+
+// 5
+console.log(dogs.some(dog => dog.curFood === dog.recFood));
+
+// 6
+const checkEatingOkay = dog =>
+  dog.curFood < dog.recFood * 1.1 && dog.curFood > dog.recFood * 0.9;
+console.log(dogs.every(checkEatingOkay));
+
+// 7
+const dogEatingOkay = dogs.filter(checkEatingOkay);
+console.log(dogEatingOkay);
+
+// 8
+const pepe = dogs.toSorted((a, b) => b.recFood - a.recFood);
+console.log(pepe);
