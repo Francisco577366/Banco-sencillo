@@ -679,3 +679,12 @@ console.log(new Date('December 24, 2015'));
 console.log(new Date(account1.movementsDates[0]));
 
 console.log(new Date(2037, 19, 35, 20, 4));
+
+const calcDaysPassed = (date1, date2) =>
+  Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
+
+const days1 = calcDaysPassed(
+  new Date(2037, 3, 14, 10, 8),
+  new Date(2037, 3, 24)
+);
+console.log(days1);
