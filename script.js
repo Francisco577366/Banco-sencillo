@@ -83,18 +83,58 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 
-// Function que borra e inserta los datos en el html
-const displayMovements = function (movements, sort = false) {
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
-  containerMovements.innerHTML = '';
-  movs.forEach(function (mov, i) {
-    const type = mov > 0 ? 'deposit' : 'withdrawal';
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
 
+const formatMovementDate = function (date, locale) {
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+  console.log(daysPassed);
+
+  if (daysPassed === 0) return 'Today';
+  if (daysPassed === 1) return 'Yesterday';
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+
+  // const day = `${date.getDate()}`.padStart(2, 0);
+  // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  // const year = date.getFullYear();
+  // return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date);
+};
+
+// Function que borra e inserta los datos en el html
+const displayMovements = function (acc, sort = false) {
+  const combinedMovsDates = acc.movements.map((mov, i) => ({
+    movement: mov,
+    movementDate: acc.movementsDates.at(i),
+  }));
+  console.log(combinedMovsDates);
+
+  if (sort) combinedMovsDates.sort((a, b) => a.movements - b.movements);
+  //const movs = sort
+  //? acc.movements.slice().sort((a, b) => a - b)
+  //: acc.movements;
+  containerMovements.innerHTML = '';
+  combinedMovsDates.forEach(function (obj, i) {
+    const { movement, movementDate } = obj;
+    const type = movement > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(movementDate);
+    const displayDate = formatMovementDate(date, acc.locale);
+
+    const formattedMov = formatCur(movement, acc.locale, acc.currency);
     const html = `<div class="movements__row">
           <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-          <div class="movements__value">${mov.toFixed(2)}€</div>
+          <div class="movements__date">${displayDate}</div>
+          <div class="movements__value">${formattedMov}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
@@ -143,12 +183,14 @@ const createUsername = function (accs) {
 createUsername(accounts);
 
 const updateUI = function (acc) {
-  displayMovements(acc.movements);
+  displayMovements(acc);
   calcDisplayBalance(acc);
   calcDisplaySummary(acc);
 };
 
 let currentAccount;
+
+const now2 = new Date();
 
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
@@ -197,6 +239,9 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
 
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     updateUI(currentAccount);
   }
 });
@@ -208,6 +253,8 @@ btnLoan.addEventListener('click', function (e) {
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     currentAccount.movements.push(amount);
+
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     //Update UI
     updateUI(currentAccount);
@@ -235,7 +282,10 @@ console.log(currentAccount);
 let sorted = false;
 btnSort.addEventListener('click', function (e) {
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  // displayMovements(acc.movements, !sorted);
+  //sorted = !sorted;
+
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
 
@@ -606,3 +656,26 @@ console.log((2.7).toFixed(0));
 console.log((2.345).toFixed(4));
 
 console.log(5 % 2);
+
+const isEven = n => n % 2 === 0;
+
+console.log(2);
+console.log(16);
+console.log(233);
+
+labelBalance.addEventListener('click', function () {
+  [...document.querySelectorAll('.movements__row')].forEach(function (row, i) {
+    if (i % 2 === 0) row.style.backgroundColor = 'orangered';
+    if (i % 3 === 0) row.style.backgroundColor = 'blue';
+  });
+});
+
+const now = new Date();
+console.log(now);
+
+console.log(new Date('Aug 02 2020 18:05:41'));
+console.log(new Date('December 24, 2015'));
+
+console.log(new Date(account1.movementsDates[0]));
+
+console.log(new Date(2037, 19, 35, 20, 4));
