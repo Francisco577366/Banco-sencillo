@@ -188,7 +188,28 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
-let currentAccount;
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    time--;
+  };
+  let time = 10;
+
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+let currentAccount, timer;
 
 const now2 = new Date();
 
@@ -226,6 +247,9 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
+    // Reset del tiempo de cierre de sesion
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
     // Actualizacion de los datos
     updateUI(currentAccount);
   }
@@ -256,6 +280,9 @@ btnTransfer.addEventListener('click', function (e) {
 
     updateUI(currentAccount);
   }
+
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 btnLoan.addEventListener('click', function (e) {
@@ -272,6 +299,9 @@ btnLoan.addEventListener('click', function (e) {
       //Update UI
       updateUI(currentAccount);
     }, 2500);
+
+    clearInterval(timer);
+    timer = startLogOutTimer();
 
     inputLoanAmount.value = '';
   }
@@ -303,437 +333,3 @@ btnSort.addEventListener('click', function (e) {
   displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
-
-// Pruebas de el curso !!!!
-// Probando metodos
-console.log(accounts);
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-const withdrawals = movements.filter(mov => mov < 0);
-
-console.log(withdrawals);
-
-const euroTotal = 1.1;
-
-const movementsUSD = movements.map(function (mov) {
-  return mov * euroTotal;
-});
-
-console.log(movements);
-console.log(movementsUSD);
-
-const balance = movements.reduce((acc, cur) => acc + cur, 0);
-console.log(balance);
-
-const max = movements.reduce((acc, mov) => {
-  if (acc > mov) {
-    return acc;
-  } else {
-    return mov;
-  }
-}, movements[0]);
-
-console.log(max);
-
-const ages = [5, 2, 4, 1, 15, 8, 3];
-
-const calcAverageHumanage = ages => {
-  const humanAges = ages
-    .map(age => (age <= 2 ? 2 * age : 16 + age * 4))
-    .filter(mayor => mayor >= 18)
-    .reduce((acc, age, i, arr) => acc + age / arr.length, 0);
-  return humanAges;
-};
-
-const avg1 = calcAverageHumanage(ages);
-console.log(avg1);
-
-// TODO: function recieves age. Age to be multiplied by (2 >= * 2, 2 < + (n + 16) * 4) then exclude from array any < 18
-
-const calc = ages => {
-  let a = ages.map(el => (el <= 2 ? el * 2 : el * 4 + 16));
-  return a.filter(el => el >= 18);
-};
-
-console.log(calc([5, 2, 4, 1, 15, 8, 3]));
-
-const totalDepositsUSD = movements
-  .filter(mov => mov > 0)
-  .map(mov => mov * euroTotal)
-  .reduce((acc, mov) => acc + mov, 0);
-
-const firstWithDrawal = movements.find(mov => mov < 0);
-console.log(movements);
-console.log(firstWithDrawal);
-
-const latestLargeMovementIndex = movements.findLastIndex(
-  mov => Math.abs(mov) > 1000
-);
-
-console.log(latestLargeMovementIndex);
-console.log(
-  `Your latest large movement was ${latestLargeMovementIndex} movements ago`
-);
-
-console.log(movements.includes(-130));
-
-const anyDeposits = movements.some(mov => mov > 1500);
-console.log(anyDeposits);
-
-console.log(movements.every(mov => mov > 0));
-console.log(account2.movements.every(mov => mov > 0));
-
-const accountMovements = accounts
-  .map(acc => acc.movements)
-  .flat()
-  .reduce((acc, mov) => acc + mov, 0);
-console.log(accountMovements);
-
-const accountMovements2 = accounts
-  .flatMap(acc => acc.movements)
-  .reduce((acc, mov) => acc + mov, 0);
-console.log(accountMovements2);
-
-const breeds = [
-  {
-    breed: 'German Shepherd',
-    averageWeight: 32,
-    activities: ['fetch', 'swimming'],
-  },
-  {
-    breed: 'Dalmatian',
-    averageWeight: 24,
-    activities: ['running', 'fetch', 'agility'],
-  },
-  {
-    breed: 'Labrador',
-    averageWeight: 28,
-    activities: ['swimming', 'fetch'],
-  },
-  {
-    breed: 'Beagle',
-    averageWeight: 12,
-    activities: ['digging', 'fetch'],
-  },
-  {
-    breed: 'Husky',
-    averageWeight: 26,
-    activities: ['running', 'agility', 'swimming'],
-  },
-  {
-    breed: 'Bulldog',
-    averageWeight: 36,
-    activities: ['sleeping'],
-  },
-  {
-    breed: 'poodle',
-    averageWeight: 18,
-    activities: ['agility', 'fetch'],
-  },
-];
-
-// 1
-const huskyWeight = breeds.find(breed => breed.breed === 'Husky').averageWeight;
-console.log(huskyWeight);
-
-// 2.
-const dogBothActivities = breeds.find(
-  breed =>
-    breed.activities.includes('fetch') && breed.activities.includes('running')
-);
-console.log(dogBothActivities);
-
-//3
-const allActivities = breeds.flatMap(breed => breed.activities);
-console.log(allActivities);
-
-//4
-const uniqueActives = [...new Set(allActivities)];
-console.log(uniqueActives);
-
-//5
-const swimmingAdjacent = breeds
-  .filter(breed => breed.activities.includes('swimming'))
-  .flatMap(breed => breed.activities);
-
-//6
-console.log(breeds.every(breed => breed.averageWeight > 10));
-
-// 7
-console.log(breeds.some(breed => breed.activities.length >= 3));
-
-// 8 Bonus
-const max2 = breeds
-  .filter(breed => breed.activities.includes('fetch'))
-  .map(breed => breed.averageWeight);
-const max3 = Math.max(...max2);
-console.log(max2);
-console.log(max3);
-
-const owners = ['jonas', 'Zach', 'Adam', 'Martha'];
-console.log(owners.sort());
-console.log(owners);
-
-console.log(movements);
-
-// Ascending
-movements.sort((a, b) => a - b);
-console.log(movements);
-// Descending
-
-movements.sort((a, b) => b - a);
-console.log(movements);
-
-const gropedMovements = Object.groupBy(movements, movement =>
-  movement > 0 ? 'Deposits' : 'Withdrawals'
-);
-console.log(gropedMovements);
-
-const groupedByActivity = Object.groupBy(accounts, account => {
-  const movementAccount = account.movements.length;
-
-  if (movementAccount >= 8) return 'Very Active';
-  if (movementAccount >= 4) return 'Active';
-  if (movementAccount >= 1) return 'Moderate';
-  return 'inactive';
-});
-
-console.log(groupedByActivity);
-
-const arr = [1, 2, 3, 4, 5, 6, 7, 8];
-
-const groupedAccounts = Object.groupBy(accounts, ({ type }) => type);
-console.log(groupedAccounts);
-
-const x = new Array(8);
-console.log(x.fill(1));
-
-arr.fill(23, 4, 7);
-console.log(arr);
-
-const y = Array.from({ length: 7 }, () => 1);
-console.log(y);
-
-const z = Array.from({ length: 100 }, (_, i) =>
-  Math.trunc(Math.random() * 100)
-);
-console.log(z);
-
-labelBalance.addEventListener('click', function () {
-  const movementsUI = Array.from(
-    document.querySelectorAll('.movements__value'),
-    el => Number(el.textContent.replace('€', ''))
-  );
-  console.log(movementsUI);
-});
-
-+(
-  // Me devuelve los datos alrevez pero reverse muta el elemento origen
-  console.log(movements)
-);
-const reversedMov = movements.slice().reverse();
-console.log(movements);
-console.log(reversedMov);
-
-//Devuelve los datos al revez y no muta el elemento origen
-const reversedMov2 = movements.toReversed();
-console.log(reversedMov2);
-
-const newMovements = movements.with(1, 2000);
-console.log(newMovements);
-console.log(movements);
-
-const bankDepositSum = accounts
-  .flatMap(acc => acc.movements)
-  .filter(mov => mov > 0)
-  .reduce((acc, mov) => acc + mov, 0);
-console.log(bankDepositSum);
-
-const numDeposits1000 = accounts
-  .flatMap(mov => mov.movements)
-  .filter(mov1 => mov1 >= 1000).length;
-console.log(numDeposits1000);
-
-const reduceDeposit = accounts
-  .flatMap(acc => acc.movements)
-  .reduce((count, cur) => (cur >= 1000 ? ++count : count), 0);
-
-const sums = accounts
-  .flatMap(acc => acc.movements)
-  .reduce(
-    (sums, cur) => {
-      // cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
-      sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
-      return sums;
-    },
-    { deposits: 0, withdrawals: 0 }
-  );
-
-console.log(sums);
-
-const converTittleCase = function (title) {
-  const capitalize = str => str[0].toUpperCase() + str.slice(1);
-  const exceptions = ['a', 'an', 'the', 'but', 'or', 'and', 'on', 'in', 'with'];
-
-  const titleCase = title
-    .toLowerCase()
-    .split(' ')
-    .map(word => (exceptions.includes(word) ? word : capitalize(word)))
-    .join(' ');
-  return capitalize(titleCase);
-};
-console.log(converTittleCase('This is a nice title'));
-console.log(converTittleCase('and here is another'));
-
-const dogs = [
-  { weight: 22, curFood: 284, owners: ['Alice', 'Bob'] },
-  { weight: 8, curFood: 200, owners: ['Matilda'] },
-  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
-  { weight: 32, curFood: 340, owners: ['Michael'] },
-];
-
-//1
-dogs.flatMap(calc => (calc.recFood = Math.floor(calc.weight ** 0.75 * 28)));
-console.log(dogs);
-
-// 2
-
-const dogSarah = dogs.find(dog => dog.owners.includes('sarah'));
-console.log(
-  `Sarah tu perro come ${dogSarah > dogs.recFood ? 'mucho' : 'Poco'}`
-);
-
-//3
-const ownersEatTooMuch = dogs
-  .filter(current => current.curFood > current.recFood)
-  .flatMap(all => all.owners);
-
-const ownersEatTooLite = dogs
-  .filter(current => current.curFood < current.recFood)
-  .flatMap(all => all.owners);
-
-//4
-console.log(
-  `${ownersEatTooMuch.join(
-    ' '
-  )} Estos perros estan comiendo mucho ${ownersEatTooLite.join(
-    ' '
-  )} estos perros estan comiendo muy poco`
-);
-
-// 5
-console.log(dogs.some(dog => dog.curFood === dog.recFood));
-
-// 6
-const checkEatingOkay = dog =>
-  dog.curFood < dog.recFood * 1.1 && dog.curFood > dog.recFood * 0.9;
-console.log(dogs.every(checkEatingOkay));
-
-// 7
-const dogEatingOkay = dogs.filter(checkEatingOkay);
-console.log(dogEatingOkay);
-
-// 8
-const pepe = dogs.toSorted((a, b) => b.recFood - a.recFood);
-console.log(pepe);
-
-// ParseInt = convierte una string numerica en numero !parsefloat! = lo mismo pero con decimales
-// isNaN = te devuelve un valor booleano dependiendo si el elemento es nan o no !isFinite! = te devuelve un booleano si tiene un numero es true si no es false
-
-console.log(Number.isFinite(20));
-
-console.log(Math.sqrt(25));
-// Devuelve 25 dividido
-
-console.log(Math.max(1, 6, 9, 21, 12, 24));
-console.log(Math.min(1, 2, 4, 6, 8, 9, 12));
-
-const randomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
-
-console.log(randomInt(10, 20));
-
-console.log(Math.round(23.3));
-console.log(Math.round(23.9));
-
-console.log(Math.ceil(23.3));
-console.log(Math.ceil(23.9));
-
-console.log(Math.floor(23.3));
-console.log(Math.floor(23.9));
-
-console.log(Math.trunc(23.3));
-console.log(Math.trunc(23.9));
-
-// Devuelve el dato con un arreglo decimal o completo.
-console.log((2.7).toFixed(0));
-console.log((2.345).toFixed(4));
-
-console.log(5 % 2);
-
-const isEven = n => n % 2 === 0;
-
-console.log(2);
-console.log(16);
-console.log(233);
-
-labelBalance.addEventListener('click', function () {
-  [...document.querySelectorAll('.movements__row')].forEach(function (row, i) {
-    if (i % 2 === 0) row.style.backgroundColor = 'orangered';
-    if (i % 3 === 0) row.style.backgroundColor = 'blue';
-  });
-});
-
-const now = new Date();
-console.log(now);
-
-console.log(new Date('Aug 02 2020 18:05:41'));
-console.log(new Date('December 24, 2015'));
-
-console.log(new Date(account1.movementsDates[0]));
-
-console.log(new Date(2037, 19, 35, 20, 4));
-
-const calcDaysPassed = (date1, date2) =>
-  Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
-
-const days1 = calcDaysPassed(
-  new Date(2037, 3, 14, 10, 8),
-  new Date(2037, 3, 24)
-);
-console.log(days1);
-
-const num = 3884764.23;
-
-const options = {
-  style: 'currency',
-  unit: 'celsius',
-  currency: 'EUR',
-};
-
-console.log('US:', new Intl.NumberFormat('en-US', options).format(num));
-console.log('Germany:', new Intl.NumberFormat('de-DE', options).format(num));
-console.log('Syria:', new Intl.NumberFormat('ar-SY', options).format(num));
-
-console.log(
-  navigator.language,
-  new Intl.NumberFormat(navigator.language, options).format(num)
-);
-
-const ingredients = ['spinach', 'tomato'];
-const pizzaTimer = setTimeout(
-  (ing1, ing2) => {
-    console.log(`Here is your Pizza ${ing1} and ${ing2}`);
-  },
-  3000,
-  ...ingredients
-);
-console.log('waiting....');
-
-if (ingredients.includes('spinach')) clearTimeout(pizzaTimer);
-
-setInterval(() => {
-  const now = new Date();
-  console.log(now);
-}, 1000);
